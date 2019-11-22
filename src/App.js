@@ -4,11 +4,13 @@ import "./App.css";
 import Users from "./components/users/Users";
 import axios from "axios";
 import Search from "./components/users/Search";
+import Alert from "./components/layout/Alert";
 
 class App extends Component {
   state = {
     loading: false,
-    users: []
+    users: [],
+    alert: null
   };
 
   // async componentDidMount() {
@@ -28,13 +30,32 @@ class App extends Component {
     this.setState({ loading: false, users: res.data.items });
   };
 
+  clearSearches = () => {
+    this.setState({ users: [] });
+  };
+
+  setAlert = (msg, type) => {
+    this.setState({ alert: { msg, type } });
+    setTimeout(() => {
+      this.setState({ alert: null });
+    }, 3000);
+  };
+
   render() {
+    const { users, loading } = this.state;
     return (
       <div className="App">
         <Navbar />
-        <Search searchUser={this.searchUser} />
         <div className="container">
-          <Users users={this.state.users} loading={this.state.loading} />
+          <Alert alert={this.state.alert} />
+          <Search
+            searchUser={this.searchUser}
+            clearSearches={this.clearSearches}
+            showClear={users.length > 0 ? true : false}
+            setAlert={this.setAlert}
+          />
+
+          <Users users={users} loading={loading} />
         </div>
       </div>
     );
